@@ -29,11 +29,8 @@ class Latex(commands.Cog):
                     if response.status != 200:
                         await ctx.send(
                             _(
-                                ctx,
-                                "Couldn't convert equation to image (E{code}).".format(
-                                    code=response.status
-                                ),
-                            )
+                                ctx, "Couldn't convert equation to image (E{code})."
+                            ).format(code=response.status)
                         )
                         return
 
