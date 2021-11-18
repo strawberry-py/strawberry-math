@@ -5,7 +5,7 @@ import aiohttp
 import nextcord
 from nextcord.ext import commands
 
-from core import i18n
+from pie import i18n
 
 _ = i18n.Translator("modules/math").translate
 
