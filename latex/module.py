@@ -2,8 +2,8 @@ import io
 import urllib
 import aiohttp
 
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 
 from core import i18n
 
@@ -41,7 +41,7 @@ class Latex(commands.Cog):
                         return
 
                     await ctx.channel.send(
-                        file=discord.File(io.BytesIO(data), "latex.png")
+                        file=nextcord.File(io.BytesIO(data), "latex.png")
                     )
 
 
