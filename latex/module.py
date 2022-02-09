@@ -5,7 +5,7 @@ import aiohttp
 import nextcord
 from nextcord.ext import commands
 
-from pie import i18n
+from pie import check, i18n
 
 _ = i18n.Translator("modules/math").translate
 
@@ -16,6 +16,7 @@ class Latex(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @check.acl2(check.ACLevel.MEMBER)
     @commands.command()
     async def latex(self, ctx, *, equation: str):
         equation: str = urllib.parse.quote(equation)
