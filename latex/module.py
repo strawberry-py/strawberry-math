@@ -2,8 +2,8 @@ import io
 import urllib
 import aiohttp
 
-import nextcord
-from nextcord.ext import commands
+import discord
+from discord.ext import commands
 
 from pie import check, i18n
 
@@ -42,9 +42,9 @@ class Latex(commands.Cog):
                         return
 
                     await ctx.channel.send(
-                        file=nextcord.File(io.BytesIO(data), "latex.png")
+                        file=discord.File(io.BytesIO(data), "latex.png")
                     )
 
 
-def setup(bot) -> None:
-    bot.add_cog(Latex(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(Latex(bot))
