@@ -1,7 +1,7 @@
 import io
 import urllib
-import aiohttp
 
+import aiohttp
 import discord
 from discord.ext import commands
 
