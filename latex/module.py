@@ -1,7 +1,5 @@
 import io
 import re
-import urllib
-import urllib.parse
 
 import aiohttp
 
@@ -24,7 +22,6 @@ class Latex(commands.Cog):
     @check.acl2(check.ACLevel.MEMBER)
     @commands.command()
     async def latex(self, ctx: commands.Context, *, equation: str):
-        equation: str = urllib.parse.quote(equation)
         base_url: str = "https://www.sciweavers.org/"
         payload = {
             "eq_latex": equation,
