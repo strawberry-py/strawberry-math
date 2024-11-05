@@ -1,5 +1,7 @@
 import io
+import re
 import urllib
+import urllib.parse
 
 import aiohttp
 
@@ -10,24 +12,33 @@ from pie import check, i18n
 
 _ = i18n.Translator("modules/math").translate
 
-PNG_HEADER = b"\x89PNG\r\n\x1a\n"
-
 
 class Latex(commands.Cog):
+    """Special thanks to solumath.
+    Created / maintained with help of vutfitdiscord/rubbergod authors.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
     @check.acl2(check.ACLevel.MEMBER)
     @commands.command()
-    async def latex(self, ctx, *, equation: str):
+    async def latex(self, ctx: commands.Context, *, equation: str):
         equation: str = urllib.parse.quote(equation)
-        url: str = (
-            "http://www.sciweavers.org/tex2img.php?"
-            f"eq={equation}&fc=White&im=png&fs=25&edit=0"
-        )
+        base_url: str = "https://www.sciweavers.org/"
+        payload = {
+            "eq_latex": equation,
+            "eq_forecolor": "White",
+            "eq_bkcolor": "Transparent",
+            "eq_font_family": "iwona",
+            "eq_font": "25",
+            "eq_imformat": "PNG",
+        }
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
+                async with session.post(
+                    base_url + "process_form_tex2img", data=payload
+                ) as response:
                     if response.status != 200:
                         await ctx.send(
                             _(
@@ -36,15 +47,22 @@ class Latex(commands.Cog):
                             ).format(code=response.status)
                         )
                         return
+                    image_url: str = self._get_image_url(await response.text())
 
-                    data = await response.read()
-                    if not data.startswith(PNG_HEADER):
-                        await ctx.send(_(ctx, "Couldn't convert equation to image."))
-                        return
+                if not image_url:
+                    await ctx.send(_(ctx, "Couldn't convert equation to image."))
+                    return
 
-                    await ctx.channel.send(
-                        file=discord.File(io.BytesIO(data), "latex.png")
-                    )
+                async with session.get(base_url + image_url) as response:
+                    data = io.BytesIO(await response.read())
+
+                    await ctx.channel.send(file=discord.File(data, "latex.png"))
+
+    def _get_image_url(self, text: str) -> str:
+        """Extract the image URL from the response text."""
+        pattern = r"/upload/Tex2Img_\w+\/\w+\.png"
+        matches = re.findall(pattern, text)
+        return matches[0]
 
 
 async def setup(bot) -> None:
